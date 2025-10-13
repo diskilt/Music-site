@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>diskilt music</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: rgba(10, 10, 10, 0.95);
+            --surface-dark: rgba(20, 20, 20, 0.8);
+            --text-dark: rgba(255, 255, 255, 0.9);
+            --accent-dark: rgba(255, 255, 255, 0.1);
+            --border-dark: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,%3Csvg width="60" height="60" xmlns="http://www.w3.org/2000/svg"%3E%3Cdefs%3E%3Cpattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse"%3E%3Cpath d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(255,255,255,0.02)" stroke-width="1"/%3E%3C/pattern%3E%3C/defs%3E%3Crect width="100%25" height="100%25" fill="url(%23grid)"/%3E%3C/svg%3E');
+            pointer-events: none;
+            opacity: 1;
+            z-index: -1;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--surface-dark);
+            border: 1px solid var(--border-dark);
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-toggle::before {
+            content: '☾';
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 20px 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 100;
+            letter-spacing: 0.2em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .header p {
+            opacity: 0.6;
+            letter-spacing: 0.1em;
+            font-size: 0.9rem;
+        }
+
+        .socials-main {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            padding: 12px 24px;
+            background: var(--surface-dark);
+            border: 1px solid var(--border-dark);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+        }
+
+        .social-link:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .section {
+            margin-bottom: 60px;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 200;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-dark);
+            letter-spacing: 0.1em;
+        }
+
+        .albums-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .album-card {
+            background: var(--surface-dark);
+            border: 1px solid var(--border-dark);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+        }
+
+        .album-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .album-cover {
+            width: 100%;
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .album-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.4s ease;
+        }
+
+        .album-card:hover .album-cover img {
+            transform: scale(1.1);
+            filter: brightness(0.8);
+        }
+
+        .album-info {
+            padding: 20px;
+        }
+
+        .album-title {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+        }
+
+        .album-year {
+            opacity: 0.5;
+            font-size: 0.85rem;
+        }
+
+        .album-description {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-dark);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+        .track-list {
+            margin-top: 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .album-card.expanded .track-list {
+            max-height: 500px;
+        }
+
+        .track {
+            padding: 12px 0;
+            border-top: 1px solid var(--border-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .track:hover {
+            padding-left: 10px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .track-name {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .track-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .track-action {
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 12px;
+        }
+
+        .track-action:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.1);
+        }
+
+        .singles-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .single-item {
+            background: var(--surface-dark);
+            border: 1px solid var(--border-dark);
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .single-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .single-description {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-dark);
+            font-size: 0.8rem;
+            line-height: 1.4;
+            opacity: 0.6;
+            font-style: italic;
+        }
+
+        .sfx-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .sfx-item {
+            background: var(--surface-dark);
+            border: 1px solid var(--border-dark);
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .sfx-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        .sfx-item:hover .sfx-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(-5px);
+        }
+
+        .sfx-name {
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+
+        .sfx-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(0);
+            background: rgba(10, 10, 10, 0.95);
+            border: 1px solid var(--border-dark);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            white-space: nowrap;
+            max-width: 200px;
+            white-space: normal;
+            z-index: 100;
+            margin-bottom: 5px;
+        }
+
+        .contact-section {
+            text-align: center;
+            padding: 40px;
+            background: var(--surface-dark);
+            border: 1px solid var(--border-dark);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            margin-top: 60px;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .contact-item {
+            opacity: 0.8;
+        }
+
+        body.xp-theme {
+            background: #008080;
+            font-family: 'Tahoma', sans-serif;
+            color: #000;
+        }
+
+        body.xp-theme::before {
+            background: none;
+        }
+
+        body.xp-theme .theme-toggle {
+            background: linear-gradient(180deg, #ffffff 0%, #d4d0c8 100%);
+            border: 2px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            border-radius: 0;
+            box-shadow: inset -1px -1px #696969, inset 1px 1px #ffffff;
+        }
+
+        body.xp-theme .theme-toggle::before {
+            content: '☀';
+            color: #000;
+        }
+
+        body.xp-theme .container {
+            background: #d4d0c8;
+            border: 3px solid;
+            border-color: #ffffff #000000 #000000 #ffffff;
+            box-shadow: inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+            margin: 20px;
+            max-width: calc(100% - 40px);
+        }
+
+        body.xp-theme .header {
+            background: linear-gradient(90deg, #0054e3 0%, #4c94ff 100%);
+            color: white;
+            padding: 8px;
+            margin: -20px -20px 20px -20px;
+            border-bottom: 2px solid;
+            border-color: #000000 #ffffff #ffffff #000000;
+            position: relative;
+        }
+
+        body.xp-theme .header h1 {
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: normal;
+            text-align: left;
+        }
+
+        body.xp-theme .header p {
+            display: none;
+        }
+
+        body.xp-theme .section-title {
+            background: linear-gradient(180deg, #ffffff 0%, #d4d0c8 100%);
+            border: 2px solid;
+            border-color: #808080 #ffffff #ffffff #808080;
+            padding: 4px 8px;
+            font-size: 14px;
+            font-weight: normal;
+            letter-spacing: normal;
+            margin-bottom: 15px;
+        }
+
+        body.xp-theme .album-card,
+        body.xp-theme .single-item,
+        body.xp-theme .sfx-item {
+            background: #ffffff;
+            border: 2px solid;
+            border-color: #808080 #ffffff #ffffff #808080;
+            border-radius: 0;
+            box-shadow: inset -1px -1px #ffffff, inset 1px 1px #808080;
+        }
+
+        body.xp-theme .album-card:hover {
+            transform: none;
+            box-shadow: inset -2px -2px #ffffff, inset 2px 2px #808080;
+        }
+
+        body.xp-theme .album-description,
+        body.xp-theme .single-description {
+            color: #404040;
+            font-style: normal;
+            opacity: 1;
+            border-top: 1px dotted #808080;
+        }
+
+        body.xp-theme .sfx-tooltip {
+            background: #ffffe1;
+            color: #000;
+            border: 1px solid #000;
+            border-radius: 0;
+            font-style: normal;
+        }
+
+        body.xp-theme .social-link,
+        body.xp-theme .track-action {
+            background: linear-gradient(180deg, #ffffff 0%, #d4d0c8 100%);
+            border: 2px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            border-radius: 0;
+            color: #000;
+            box-shadow: inset -1px -1px #696969, inset 1px 1px #ffffff;
+        }
+
+        body.xp-theme .social-link:hover,
+        body.xp-theme .track-action:hover {
+            transform: none;
+            border-color: #808080 #ffffff #ffffff #808080;
+            box-shadow: inset -1px -1px #ffffff, inset 1px 1px #808080;
+        }
+
+        body.xp-theme .social-link:active,
+        body.xp-theme .track-action:active {
+            background: #d4d0c8;
+            border-color: #808080 #ffffff #ffffff #808080;
+        }
+
+        body.xp-theme .track {
+            border-top: 1px dotted #808080;
+            color: #000;
+        }
+
+        body.xp-theme .track-name,
+        body.xp-theme .album-year {
+            color: #000;
+            opacity: 1;
+        }
+
+        body.xp-theme .album-title,
+        body.xp-theme .sfx-name {
+            color: #000;
+            font-weight: bold;
+        }
+
+        body.xp-theme .contact-section {
+            background: #ffffff;
+            border: 2px solid;
+            border-color: #808080 #ffffff #ffffff #808080;
+            border-radius: 0;
+            box-shadow: inset -1px -1px #ffffff, inset 1px 1px #808080;
+        }
+
+        body.xp-theme .contact-item {
+            color: #000;
+            opacity: 1;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .platform-links {
+            display: flex;
+            gap: 5px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" onclick="toggleTheme()"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>diskilt_</h1>
+            <p>:3</p>
+        </div>
+
+        <div class="socials-main">
+            <a href="https://soundcloud.com/" class="social-link hidden" id="soundcloud-main">SoundCloud</a>
+            <a href="https://youtube.com/" class="social-link hidden" id="youtube-main">YouTube</a>
+            <a href="https://open.spotify.com/artist/" class="social-link hidden" id="spotify-main">Spotify</a>
+            <a href="https://linktr.ee/Diskilt_" class="social-link" id="linktree-main">Linktree</a>
+        </div>
+
+        <div class="section hidden">
+            <h2 class="section-title">Albums</h2>
+            <div class="albums-grid hidden">
+                <div class="album-card" onclick="toggleAlbum(this)">
+                    <div class="album-cover">
+                        <img src="album1.jpg" alt="Album Cover" onerror="this.style.display='none'">
+                    </div>
+                    <div class="album-info">
+                        <div class="album-title"></div>
+                        <div class="album-year"></div>
+                        <div class="album-description"></div>
+                        <div class="track-list">
+                            <div class="track">
+                                <span class="track-name"></span>
+                                <div class="track-actions">
+                                    <a href="track1.mp3" download class="track-action">↓</a>
+                                    <div class="platform-links">
+                                        <a href="https://soundcloud.com/track1" class="track-action">S</a>
+                                        <a href="https://youtube.com/track1" class="track-action">Y</a>
+                                        <a href="https://roblox.com/track1" class="track-action">R</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="track">
+                                <span class="track-name"></span>
+                                <div class="track-actions">
+                                    <a href="track2.mp3" download class="track-action">↓</a>
+                                    <div class="platform-links">
+                                        <a href="https://soundcloud.com/track2" class="track-action">S</a>
+                                        <a href="https://youtube.com/track2" class="track-action">Y</a>
+                                        <a href="https://discord.com/track2" class="track-action">D</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="album-card" onclick="toggleAlbum(this)">
+                    <div class="album-cover">
+                        <img src="album2.jpg" alt="Album Cover" onerror="this.style.display='none'">
+                    </div>
+                    <div class="album-info">
+                        <div class="album-title"></div>
+                        <div class="album-year"></div>
+                        <div class="album-description"></div>
+                        <div class="track-list">
+                            <div class="track">
+                                <span class="track-name"></span>
+                                <div class="track-actions">
+                                    <a href="track3.mp3" download class="track-action"></a>
+                                    <div class="platform-links">
+                                        <a href="https://steam.com/track3" class="track-action"></a>
+                                        <a href="https://youtube.com/track3" class="track-action"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section hidden">
+            <h2 class="section-title">Singles</h2>
+            <div class="singles-container">
+                <div class="single-item">
+                    <div class="album-title"></div>
+                    <div class="album-year"></div>
+                    <div class="single-description"></div>
+                    <div class="track-actions" style="margin-top: 10px;">
+                        <a href="single1.mp3" download class="track-action">↓</a>
+                        <a href="https://soundcloud.com/single1" class="track-action">S</a>
+                        <a href="https://youtube.com/single1" class="track-action">Y</a>
+                    </div>
+                </div>
+                <div class="single-item">
+                    <div class="album-title"></div>
+                    <div class="album-year"></div>
+                    <div class="single-description"></div>
+                    <div class="track-actions" style="margin-top: 10px;">
+                        <a href="single2.mp3" download class="track-action">↓</a>
+                        <a href="https://spotify.com/single2" class="track-action">SP</a>
+                        <a href="https://roblox.com/single2" class="track-action">R</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section hidden" id="sfx-section">
+            <h2 class="section-title">SFX Library</h2>
+            <div class="sfx-grid">
+                <div class="sfx-item hidden">
+                    <div class="sfx-tooltip"></div>
+                    <div class="sfx-name"></div>
+                    <div class="track-actions" style="margin-top: 8px; justify-content: center;">
+                        <a href="sfx1.wav" download class="track-action"></a>
+                        <a href="https://steam.com/sfx1" class="track-action"></a>
+                    </div>
+                </div>
+                <div class="sfx-item hidden">
+                    <div class="sfx-tooltip"></div>
+                    <div class="sfx-name"></div>
+                    <div class="track-actions" style="margin-top: 8px; justify-content: center;">
+                        <a href="sfx2.wav" download class="track-action">↓</a>
+                        <a href="https://roblox.com/sfx2" class="track-action">R</a>
+                    </div>
+                </div>
+                <div class="sfx-item hidden">
+                    <div class="sfx-tooltip"></div>
+                    <div class="sfx-name"></div>
+                    <div class="track-actions" style="margin-top: 8px; justify-content: center;">
+                        <a href="sfx3.wav" download class="track-action">↓</a>
+                        <a href="https://discord.com/sfx3" class="track-action">D</a>
+                    </div>
+                </div>
+                <div class="sfx-item hidden">
+                    <div class="sfx-tooltip"></div>
+                    <div class="sfx-name"></div>
+                    <div class="track-actions" style="margin-top: 8px; justify-content: center;">
+                        <a href="sfx4.wav" download class="track-action">↓</a>
+                        <a href="https://steam.com/sfx4" class="track-action">ST</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-section" id="contact-section">
+            <h2 class="section-title"> This is a W.I.P btw</h2>
+            <div class="contact-info">
+                <div class="contact-item">Discord: diskilt_</div>
+                <div class="contact-item">Email: diskilt.music@gmail.com</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let darkTheme = true;
+
+        function toggleTheme() {
+            darkTheme = !darkTheme;
+            document.body.classList.toggle('xp-theme');
+            
+            document.querySelectorAll('.album-card, .single-item, .sfx-item').forEach(el => {
+                el.style.transition = 'all 0.3s ease';
+            });
+        }
+
+        function toggleAlbum(card) {
+            card.classList.toggle('expanded');
+            
+            const allCards = document.querySelectorAll('.album-card');
+            allCards.forEach(c => {
+                if (c !== card) {
+                    c.classList.remove('expanded');
+                }
+            });
+        }
+
+        document.querySelectorAll('.track-action, .social-link').forEach(el => {
+            el.addEventListener('mouseenter', function() {
+                this.style.transform = this.style.transform || 'scale(1.1)';
+            });
+            
+            el.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+            });
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!document.body.classList.contains('xp-theme')) {
+                const x = e.clientX / window.innerWidth;
+                const y = e.clientY / window.innerHeight;
+                
+                document.body.style.background = `linear-gradient(${135 + x * 20}deg, 
+                    rgba(10, 10, 10, ${0.95 + y * 0.05}) 0%, 
+                    rgba(26, 26, 26, ${1 - x * 0.1}) 100%)`;
+            }
+        });
+
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallax = document.querySelector('body::before');
+            if (parallax && !document.body.classList.contains('xp-theme')) {
+                document.body.style.setProperty('--scroll', scrolled * 0.5 + 'px');
+            }
+        });
+    </script>
+</body>
+</html>
