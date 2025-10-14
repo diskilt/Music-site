@@ -17,6 +17,19 @@
             --text-dark: rgba(255, 255, 255, 0.9);
             --accent-dark: rgba(255, 255, 255, 0.1);
             --border-dark: rgba(255, 255, 255, 0.05);
+            
+            --tag-red: #ff4757;
+            --tag-blue: #3742fa;
+            --tag-green: #2ed573;
+            --tag-yellow: #ffa502;
+            --tag-purple: #5f27cd;
+            --tag-cyan: #00d2d3;
+            --tag-pink: #ff6b9d;
+            --tag-orange: #ff9ff3;
+            --tag-lime: #a4e86e;
+            --tag-indigo: #5f3dc4;
+            --tag-teal: #15aabf;
+            --tag-gray: #718093;
         }
 
         body {
@@ -68,6 +81,54 @@
             content: '☾';
             font-size: 24px;
             transition: all 0.3s ease;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-block;
+            margin: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .tag:hover {
+            transform: scale(1.1);
+            filter: brightness(1.2);
+        }
+
+        .tag.active {
+            box-shadow: 0 0 0 2px white;
+            transform: scale(1.05);
+        }
+
+        .tag-red { background: var(--tag-red); }
+        .tag-blue { background: var(--tag-blue); }
+        .tag-green { background: var(--tag-green); }
+        .tag-yellow { background: var(--tag-yellow); color: #333; text-shadow: none; }
+        .tag-purple { background: var(--tag-purple); }
+        .tag-cyan { background: var(--tag-cyan); color: #333; text-shadow: none; }
+        .tag-pink { background: var(--tag-pink); }
+        .tag-orange { background: var(--tag-orange); color: #333; text-shadow: none; }
+        .tag-lime { background: var(--tag-lime); color: #333; text-shadow: none; }
+        .tag-indigo { background: var(--tag-indigo); }
+        .tag-teal { background: var(--tag-teal); }
+        .tag-gray { background: var(--tag-gray); }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 10px;
+        }
+
+        .item-hidden {
+            display: none !important;
         }
 
         .container {
@@ -393,6 +454,11 @@
             color: #000;
         }
 
+        body.xp-theme .tag {
+            border-radius: 0;
+            box-shadow: inset -1px -1px #696969, inset 1px 1px #ffffff;
+        }
+
         body.xp-theme .container {
             background: #d4d0c8;
             border: 3px solid;
@@ -555,16 +621,21 @@
             <a href="https://linktr.ee/Diskilt_" class="social-link" id="linktree-main">Linktree</a>
         </div>
 
-        <div class="section hidden">
+        <div class="section">
             <h2 class="section-title">Albums</h2>
             <div class="albums-grid hidden">
-                <div class="album-card" onclick="toggleAlbum(this)">
+                <div class="album-card" onclick="toggleAlbum(this)" data-tags="electronic,ambient,2024">
                     <div class="album-cover">
                         <img src="album1.jpg" alt="Album Cover" onerror="this.style.display='none'">
                     </div>
                     <div class="album-info">
                         <div class="album-title"></div>
                         <div class="album-year"></div>
+                        <div class="tags-container">
+                            <span class="tag tag-blue" onclick="event.stopPropagation(); toggleTag('a')"></span>
+                            <span class="tag tag-purple" onclick="event.stopPropagation(); toggleTag('a')"></span>
+                            <span class="tag tag-green" onclick="event.stopPropagation(); toggleTag('a')"></span>
+                        </div>
                         <div class="album-description"></div>
                         <div class="track-list">
                             <div class="track">
@@ -579,7 +650,7 @@
                                 </div>
                             </div>
                             <div class="track">
-                                <span class="track-name"></span>
+                                <span class="track-name"> </span>
                                 <div class="track-actions">
                                     <a href="track2.mp3" download class="track-action">↓</a>
                                     <div class="platform-links">
@@ -593,19 +664,24 @@
                     </div>
                 </div>
 
-                <div class="album-card" onclick="toggleAlbum(this)">
+                <div class="album-card" onclick="toggleAlbum(this)" data-tags="experimental,dark,2023">
                     <div class="album-cover">
                         <img src="album2.jpg" alt="Album Cover" onerror="this.style.display='none'">
                     </div>
                     <div class="album-info">
-                        <div class="album-title"></div>
+                        <div class="album-title"> </div>
                         <div class="album-year"></div>
-                        <div class="album-description"></div>
+                        <div class="tags-container">
+                            <span class="tag tag-red" onclick="event.stopPropagation(); toggleTag('experimental')"></span>
+                            <span class="tag tag-gray" onclick="event.stopPropagation(); toggleTag('dark')"></span>
+                            <span class="tag tag-indigo" onclick="event.stopPropagation(); toggleTag('2023')"></span>
+                        </div>
+                        <div class="album-description">    </div>
                         <div class="track-list">
                             <div class="track">
                                 <span class="track-name"></span>
                                 <div class="track-actions">
-                                    <a href="track3.mp3" download class="track-action"></a>
+                                    <a href="track3.mp3" download class="track-action">↓</a>
                                     <div class="platform-links">
                                         <a href="https://steam.com/track3" class="track-action"></a>
                                         <a href="https://youtube.com/track3" class="track-action"></a>
@@ -618,23 +694,33 @@
             </div>
         </div>
 
-        <div class="section hidden">
+        <div class="section">
             <h2 class="section-title">Singles</h2>
-            <div class="singles-container">
-                <div class="single-item">
+            <div class="singles-container hidden">
+                <div class="single-item" data-tags="chill,lofi,2024">
                     <div class="album-title"></div>
                     <div class="album-year"></div>
-                    <div class="single-description"></div>
+                    <div class="tags-container">
+                        <span class="tag tag-cyan" onclick="toggleTag('chill')"></span>
+                        <span class="tag tag-pink" onclick="toggleTag('lofi')"></span>
+                        <span class="tag tag-green" onclick="toggleTag('2024')"></span>
+                    </div>
+                    <div class="single-description">     </div>
                     <div class="track-actions" style="margin-top: 10px;">
                         <a href="single1.mp3" download class="track-action">↓</a>
                         <a href="https://soundcloud.com/single1" class="track-action">S</a>
                         <a href="https://youtube.com/single1" class="track-action">Y</a>
                     </div>
                 </div>
-                <div class="single-item">
+                <div class="single-item" data-tags="upbeat,dance,remix">
                     <div class="album-title"></div>
                     <div class="album-year"></div>
-                    <div class="single-description"></div>
+                    <div class="tags-container">
+                        <span class="tag tag-yellow" onclick="toggleTag('upbeat')"></span>
+                        <span class="tag tag-orange" onclick="toggleTag('dance')"></span>
+                        <span class="tag tag-teal" onclick="toggleTag('remix')"></span>
+                    </div>
+                    <div class="single-description">   </div>
                     <div class="track-actions" style="margin-top: 10px;">
                         <a href="single2.mp3" download class="track-action">↓</a>
                         <a href="https://spotify.com/single2" class="track-action">SP</a>
@@ -644,46 +730,66 @@
             </div>
         </div>
 
-        <div class="section hidden" id="sfx-section">
+        <div class="section" id="sfx-section">
             <h2 class="section-title">SFX Library</h2>
-            <div class="sfx-grid">
-                <div class="sfx-item hidden">
-                    <div class="sfx-tooltip"></div>
-                    <div class="sfx-name"></div>
+            <div class="sfx-grid hidden">
+                <div class="sfx-item" data-tags="game,retro,8bit">
+                    <div class="sfx-tooltip">   </div>
+                    <div class="sfx-name"> </div>
+                    <div class="tags-container">
+                        <span class="tag tag-lime" onclick="toggleTag('game')"></span>
+                        <span class="tag tag-purple" onclick="toggleTag('retro')"></span>
+                        <span class="tag tag-blue" onclick="toggleTag('8bit')"></span>
+                    </div>
                     <div class="track-actions" style="margin-top: 8px; justify-content: center;">
-                        <a href="sfx1.wav" download class="track-action"></a>
+                        <a href="sfx1.wav" download class="track-action">↓</a>
                         <a href="https://steam.com/sfx1" class="track-action"></a>
                     </div>
                 </div>
-                <div class="sfx-item hidden">
-                    <div class="sfx-tooltip"></div>
-                    <div class="sfx-name"></div>
+                <div class="sfx-item" data-tags="ui,click,minimal">
+                    <div class="sfx-tooltip">   </div>
+                    <div class="sfx-name"> </div>
+                    <div class="tags-container">
+                        <span class="tag tag-gray" onclick="toggleTag('ui')"></span>
+                        <span class="tag tag-cyan" onclick="toggleTag('click')"></span>
+                        <span class="tag tag-indigo" onclick="toggleTag('minimal')"></span>
+                    </div>
                     <div class="track-actions" style="margin-top: 8px; justify-content: center;">
                         <a href="sfx2.wav" download class="track-action">↓</a>
-                        <a href="https://roblox.com/sfx2" class="track-action">R</a>
+                        <a href="https://roblox.com/sfx2" class="track-action"></a>
                     </div>
                 </div>
-                <div class="sfx-item hidden">
-                    <div class="sfx-tooltip"></div>
-                    <div class="sfx-name"></div>
+                <div class="sfx-item" data-tags="notification,alert,soft">
+                    <div class="sfx-tooltip">  </div>
+                    <div class="sfx-name"> </div>
+                    <div class="tags-container">
+                        <span class="tag tag-pink" onclick="toggleTag('notification')"></span>
+                        <span class="tag tag-red" onclick="toggleTag('alert')"></span>
+                        <span class="tag tag-teal" onclick="toggleTag('soft')"></span>
+                    </div>
                     <div class="track-actions" style="margin-top: 8px; justify-content: center;">
                         <a href="sfx3.wav" download class="track-action">↓</a>
-                        <a href="https://discord.com/sfx3" class="track-action">D</a>
+                        <a href="https://discord.com/sfx3" class="track-action"></a>
                     </div>
                 </div>
-                <div class="sfx-item hidden">
-                    <div class="sfx-tooltip"></div>
+                <div class="sfx-item" data-tags="whoosh,transition,cinematic">
+                    <div class="sfx-tooltip">  </div>
                     <div class="sfx-name"></div>
+                    <div class="tags-container">
+                        <span class="tag tag-orange" onclick="toggleTag('whoosh')"></span>
+                        <span class="tag tag-yellow" onclick="toggleTag('transition')"></span>
+                        <span class="tag tag-green" onclick="toggleTag('cinematic')"></span>
+                    </div>
                     <div class="track-actions" style="margin-top: 8px; justify-content: center;">
                         <a href="sfx4.wav" download class="track-action">↓</a>
-                        <a href="https://steam.com/sfx4" class="track-action">ST</a>
+                        <a href="https://steam.com/sfx4" class="track-action"></a>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="contact-section" id="contact-section">
-            <h2 class="section-title"> This is a W.I.P btw</h2>
+            <h2 class="section-title">This is a W.I.P btw</h2>
             <div class="contact-info">
                 <div class="contact-item">Discord: diskilt_</div>
                 <div class="contact-item">Email: diskilt.music@gmail.com</div>
@@ -693,6 +799,7 @@
 
     <script>
         let darkTheme = true;
+        let activeTag = null;
 
         function toggleTheme() {
             darkTheme = !darkTheme;
@@ -711,6 +818,46 @@
                 if (c !== card) {
                     c.classList.remove('expanded');
                 }
+            });
+        }
+
+        function toggleTag(tagName) {
+            const allTags = document.querySelectorAll('.tag');
+            allTags.forEach(tag => {
+                tag.classList.remove('active');
+            });
+
+            if (activeTag === tagName) {
+                activeTag = null;
+                showAllItems();
+            } else {
+                activeTag = tagName;
+                filterByTag(tagName);
+                document.querySelectorAll('.tag').forEach(tag => {
+                    if (tag.textContent === tagName) {
+                        tag.classList.add('active');
+                    }
+                });
+            }
+        }
+
+        function filterByTag(tagName) {
+            const items = document.querySelectorAll('.album-card, .single-item, .sfx-item');
+            
+            items.forEach(item => {
+                const itemTags = (item.dataset.tags || '').split(',');
+                if (itemTags.some(tag => tag.trim() === tagName)) {
+                    item.classList.remove('item-hidden');
+                } else {
+                    item.classList.add('item-hidden');
+                }
+            });
+        }
+
+        function showAllItems() {
+            const items = document.querySelectorAll('.album-card, .single-item, .sfx-item');
+            items.forEach(item => {
+                item.classList.remove('item-hidden');
             });
         }
 
